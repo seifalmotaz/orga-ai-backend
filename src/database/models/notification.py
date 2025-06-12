@@ -1,0 +1,35 @@
+from tortoise import fields
+from .base import BaseModel
+from .enums import NotificationType, NotificationStatus, MessageType
+
+
+class NotificationQueue(BaseModel):
+    user = fields.ForeignKeyField(
+        "models.User", related_name="notifications", index=True
+    )
+    event = fields.ForeignKeyField("models.Event", null=True, index=True)
+    task = fields.ForeignKeyField("models.Task", null=True, index=True)
+    habit = fields.ForeignKeyField("models.Habit", null=True, index=True)
+    event_reminder = fields.ForeignKeyField("models.EventReminder", null=True)
+    task_reminder = fields.ForeignKeyField("models.TaskReminder", null=True)
+    scheduled_time = fields.DatetimeField(index=True)
+    notification_type = fields.CharEnumField(NotificationType)
+    status = fields.CharEnumField(
+        NotificationStatus, default=NotificationStatus.PENDING, index=True
+    )
+    custom_message = fields.TextField(null=True)
+    message_type = fields.CharEnumField(MessageType, null=True)
+    retry_count = fields.IntField(default=0)
+    error_message = fields.TextField(null=True)
+    sent_at = fields.DatetimeField(null=True)
+
+    class Meta:
+        table = "notification_queue"
+        indexes = [
+            ("scheduled_time", "status"),
+            ("user_id", "status"),
+            ("status", "retry_count"),
+            ("event_id",),
+            ("task_id",),
+            ("habit_id",),
+        ]
