@@ -12,9 +12,18 @@ dependencies = [
     "python-dotenv",
     "asyncpg",
     "orjson>=3.9.15",
+    "pytest>=8.4.0",
+    "pytest-asyncio>=1.0.0",
 ]
 
 [tool.aerich]
 tortoise_orm = "src.database.TORTOISE_ORM"
 location = "./src/database/migrations"
 src_folder = "./."
+
+[dependency-groups]
+dev = ["pytest-asyncio>=1.0.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = "auto"

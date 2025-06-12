@@ -5,9 +5,9 @@ from .enums import Frequency, MessageType
 
 
 class HabitTemplate(BaseModel):
-    name = fields.CharField(max_length=255, index=True)
+    name = fields.CharField(max_length=255, db_index=True)
     description = fields.TextField(null=True)
-    category = fields.CharField(max_length=100, index=True)
+    category = fields.CharField(max_length=100, db_index=True)
     default_frequency = fields.CharEnumField(Frequency)
     default_target_days = fields.JSONField(null=True)
     default_target_count = fields.IntField(default=1)
@@ -16,7 +16,7 @@ class HabitTemplate(BaseModel):
     color = fields.CharField(max_length=7, default="#4CAF50")
     difficulty_level = fields.IntField(default=1)
     estimated_time_minutes = fields.IntField(null=True)
-    is_active = fields.BooleanField(default=True, index=True)
+    is_active = fields.BooleanField(default=True, db_index=True)
     sort_order = fields.IntField(default=0)
 
     class Meta:
@@ -30,9 +30,9 @@ class HabitTemplate(BaseModel):
 
 class HabitTemplateMessage(BaseModel):
     habit_template = fields.ForeignKeyField(
-        "models.HabitTemplate", related_name="messages", index=True
+        "models.HabitTemplate", related_name="messages", db_index=True
     )
-    message_type = fields.CharEnumField(MessageType, index=True)
+    message_type = fields.CharEnumField(MessageType, db_index=True)
     message_text = fields.TextField()
     is_active = fields.BooleanField(default=True)
     usage_count = fields.IntField(default=0)
@@ -45,7 +45,7 @@ class HabitTemplateMessage(BaseModel):
 
 
 class Habit(BaseModel):
-    user = fields.ForeignKeyField("models.User", related_name="habits", index=True)
+    user = fields.ForeignKeyField("models.User", related_name="habits", db_index=True)
     template = fields.ForeignKeyField(
         "models.HabitTemplate", null=True, related_name="habits"
     )
@@ -55,7 +55,7 @@ class Habit(BaseModel):
     target_days = fields.JSONField(null=True)
     target_count = fields.IntField(default=1)
     reminder_time = fields.TimeField(null=True)
-    is_active = fields.BooleanField(default=True, index=True)
+    is_active = fields.BooleanField(default=True, db_index=True)
 
     class Meta:
         table = "habits"
@@ -67,9 +67,9 @@ class Habit(BaseModel):
 
 class HabitCompletion(BaseModel):
     habit = fields.ForeignKeyField(
-        "models.Habit", related_name="completions", index=True
+        "models.Habit", related_name="completions", db_index=True
     )
-    completion_date = fields.DateField(index=True)
+    completion_date = fields.DateField(db_index=True)
     completed_count = fields.IntField(default=1)
     notes = fields.TextField(null=True)
 
@@ -82,11 +82,13 @@ class HabitCompletion(BaseModel):
 
 
 class HabitStreak(BaseModel):
-    habit = fields.ForeignKeyField("models.Habit", related_name="streaks", index=True)
+    habit = fields.ForeignKeyField(
+        "models.Habit", related_name="streaks", db_index=True
+    )
     start_date = fields.DateField()
     end_date = fields.DateField(null=True)
     streak_length = fields.IntField()
-    is_current = fields.BooleanField(default=False, index=True)
+    is_current = fields.BooleanField(default=False, db_index=True)
 
     class Meta:
         table = "habit_streaks"
