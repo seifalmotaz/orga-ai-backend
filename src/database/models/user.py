@@ -4,8 +4,8 @@ from .enums import NotificationType, DeviceType
 
 
 class User(BaseModel):
-    clerk_id = fields.CharField(max_length=255, unique=True, index=True)
-    email = fields.CharField(max_length=255, unique=True, index=True)
+    clerk_id = fields.CharField(max_length=255, unique=True, db_index=True)
+    email = fields.CharField(max_length=255, unique=True, db_index=True)
     username = fields.CharField(max_length=100, null=True)
     timezone = fields.CharField(max_length=50, default="UTC")
     default_reminder_minutes = fields.IntField(default=15)
@@ -23,7 +23,7 @@ class User(BaseModel):
 
 
 class UserDevice(BaseModel):
-    user = fields.ForeignKeyField("models.User", related_name="devices", index=True)
+    user = fields.ForeignKeyField("models.User", related_name="devices", db_index=True)
     device_type = fields.CharEnumField(DeviceType)
     push_token = fields.TextField(null=True)
     endpoint_url = fields.TextField(null=True)

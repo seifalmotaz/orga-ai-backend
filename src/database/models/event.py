@@ -5,13 +5,13 @@ from .enums import EventStatus, Priority, NotificationType
 
 class Event(BaseModel):
     calendar = fields.ForeignKeyField(
-        "models.Calendar", related_name="events", index=True
+        "models.Calendar", related_name="events", db_index=True
     )
-    title = fields.CharField(max_length=500, index=True)
+    title = fields.CharField(max_length=500, db_index=True)
     description = fields.TextField(null=True)
     location = fields.CharField(max_length=500, null=True)
-    start_datetime = fields.DatetimeField(index=True)
-    end_datetime = fields.DatetimeField(index=True)
+    start_datetime = fields.DatetimeField(db_index=True)
+    end_datetime = fields.DatetimeField(db_index=True)
     is_all_day = fields.BooleanField(default=False)
     recurrence_pattern = fields.ForeignKeyField(
         "models.RecurrencePattern", null=True, related_name="events"
@@ -19,9 +19,9 @@ class Event(BaseModel):
     parent_event = fields.ForeignKeyField(
         "models.Event", null=True, related_name="instances"
     )
-    is_recurring_master = fields.BooleanField(default=False, index=True)
+    is_recurring_master = fields.BooleanField(default=False, db_index=True)
     status = fields.CharEnumField(
-        EventStatus, default=EventStatus.CONFIRMED, index=True
+        EventStatus, default=EventStatus.CONFIRMED, db_index=True
     )
     priority = fields.IntEnumField(Priority, default=Priority.NONE)
 
@@ -38,11 +38,11 @@ class Event(BaseModel):
 
 class EventInstance(BaseModel):
     master_event = fields.ForeignKeyField(
-        "models.Event", related_name="computed_instances", index=True
+        "models.Event", related_name="computed_instances", db_index=True
     )
-    instance_date = fields.DateField(index=True)
-    start_datetime = fields.DatetimeField(index=True)
-    end_datetime = fields.DatetimeField(index=True)
+    instance_date = fields.DateField(db_index=True)
+    start_datetime = fields.DatetimeField(db_index=True)
+    end_datetime = fields.DatetimeField(db_index=True)
     is_exception = fields.BooleanField(default=False)
 
     class Meta:
@@ -66,7 +66,9 @@ class EventException(BaseModel):
 
 
 class EventReminder(BaseModel):
-    event = fields.ForeignKeyField("models.Event", related_name="reminders", index=True)
+    event = fields.ForeignKeyField(
+        "models.Event", related_name="reminders", db_index=True
+    )
     reminder_minutes = fields.IntField()
     notification_type = fields.CharEnumField(NotificationType)
     is_enabled = fields.BooleanField(default=True)

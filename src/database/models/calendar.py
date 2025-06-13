@@ -4,7 +4,9 @@ from .enums import Frequency
 
 
 class Calendar(BaseModel):
-    user = fields.ForeignKeyField("models.User", related_name="calendars", index=True)
+    user = fields.ForeignKeyField(
+        "models.User", related_name="calendars", db_index=True
+    )
     name = fields.CharField(max_length=255)
     description = fields.TextField(null=True)
     color = fields.CharField(max_length=7, default="#3174ad")

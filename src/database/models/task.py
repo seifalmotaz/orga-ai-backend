@@ -4,13 +4,13 @@ from .enums import TaskStatus, Priority, NotificationType
 
 
 class Task(BaseModel):
-    user = fields.ForeignKeyField("models.User", related_name="tasks", index=True)
-    title = fields.CharField(max_length=500, index=True)
+    user = fields.ForeignKeyField("models.User", related_name="tasks", db_index=True)
+    title = fields.CharField(max_length=500, db_index=True)
     description = fields.TextField(null=True)
-    due_date = fields.DateField(null=True, index=True)
+    due_date = fields.DateField(null=True, db_index=True)
     due_time = fields.TimeField(null=True)
-    status = fields.CharEnumField(TaskStatus, default=TaskStatus.PENDING, index=True)
-    priority = fields.IntEnumField(Priority, default=Priority.LOW, index=True)
+    status = fields.CharEnumField(TaskStatus, default=TaskStatus.PENDING, db_index=True)
+    priority = fields.IntEnumField(Priority, default=Priority.LOW, db_index=True)
     completion_percentage = fields.IntField(default=0)
     estimated_duration = fields.IntField(null=True)
     actual_duration = fields.IntField(null=True)
@@ -36,10 +36,10 @@ class Task(BaseModel):
 
 class TaskDependency(BaseModel):
     prerequisite_task = fields.ForeignKeyField(
-        "models.Task", related_name="dependents", index=True
+        "models.Task", related_name="dependents", db_index=True
     )
     dependent_task = fields.ForeignKeyField(
-        "models.Task", related_name="prerequisites", index=True
+        "models.Task", related_name="prerequisites", db_index=True
     )
 
     class Meta:
@@ -51,7 +51,9 @@ class TaskDependency(BaseModel):
 
 
 class TaskTimeLog(BaseModel):
-    task = fields.ForeignKeyField("models.Task", related_name="time_logs", index=True)
+    task = fields.ForeignKeyField(
+        "models.Task", related_name="time_logs", db_index=True
+    )
     start_time = fields.DatetimeField()
     end_time = fields.DatetimeField(null=True)
     duration_minutes = fields.IntField(null=True)
@@ -63,7 +65,9 @@ class TaskTimeLog(BaseModel):
 
 
 class TaskReminder(BaseModel):
-    task = fields.ForeignKeyField("models.Task", related_name="reminders", index=True)
+    task = fields.ForeignKeyField(
+        "models.Task", related_name="reminders", db_index=True
+    )
     reminder_minutes = fields.IntField()
     notification_type = fields.CharEnumField(NotificationType)
     is_enabled = fields.BooleanField(default=True)

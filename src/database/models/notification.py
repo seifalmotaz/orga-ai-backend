@@ -5,17 +5,17 @@ from .enums import NotificationType, NotificationStatus, MessageType
 
 class NotificationQueue(BaseModel):
     user = fields.ForeignKeyField(
-        "models.User", related_name="notifications", index=True
+        "models.User", related_name="notifications", db_index=True
     )
-    event = fields.ForeignKeyField("models.Event", null=True, index=True)
-    task = fields.ForeignKeyField("models.Task", null=True, index=True)
-    habit = fields.ForeignKeyField("models.Habit", null=True, index=True)
+    event = fields.ForeignKeyField("models.Event", null=True, db_index=True)
+    task = fields.ForeignKeyField("models.Task", null=True, db_index=True)
+    habit = fields.ForeignKeyField("models.Habit", null=True, db_index=True)
     event_reminder = fields.ForeignKeyField("models.EventReminder", null=True)
     task_reminder = fields.ForeignKeyField("models.TaskReminder", null=True)
-    scheduled_time = fields.DatetimeField(index=True)
+    scheduled_time = fields.DatetimeField(db_index=True)
     notification_type = fields.CharEnumField(NotificationType)
     status = fields.CharEnumField(
-        NotificationStatus, default=NotificationStatus.PENDING, index=True
+        NotificationStatus, default=NotificationStatus.PENDING, db_index=True
     )
     custom_message = fields.TextField(null=True)
     message_type = fields.CharEnumField(MessageType, null=True)
