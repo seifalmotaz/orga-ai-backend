@@ -28,7 +28,7 @@ st.set_page_config(
     page_title="Orga-AI Chat Interface",
     page_icon="🤖",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 # Initialize session state
@@ -39,6 +39,7 @@ if "agent_graph" not in st.session_state:
 if "thread_id" not in st.session_state:
     st.session_state.thread_id = "streamlit_session"
 
+
 def get_mermaid_diagram():
     """Get the Mermaid diagram representation of the agent graph."""
     try:
@@ -46,15 +47,16 @@ def get_mermaid_diagram():
     except Exception as e:
         return f"Error generating diagram: {str(e)}"
 
+
 def display_graph_visualization():
     """Display the LangGraph visualization using Mermaid."""
     st.subheader("🔄 Agent Graph Flow")
-    
+
     mermaid_code = get_mermaid_diagram()
-    
+
     # Display the mermaid diagram
     st.code(mermaid_code, language="mermaid")
-    
+
     # Try to render the diagram if possible
     try:
         st.markdown(f"""
@@ -63,7 +65,10 @@ def display_graph_visualization():
         ```
         """)
     except:
-        st.info("Mermaid diagram code is shown above. You can copy it to visualize in a Mermaid viewer.")
+        st.info(
+            "Mermaid diagram code is shown above. You can copy it to visualize in a Mermaid viewer."
+        )
+
 
 def send_message_to_agent(user_input: str):
     """Send a message to the agent and get the response."""
@@ -78,8 +83,7 @@ def send_message_to_agent(user_input: str):
         # Get response from agent
         with st.spinner("🤖 Agent is thinking..."):
             result = st.session_state.agent_graph.invoke(
-                {"messages": [human_message]},
-                config=user_config
+                {"messages": [human_message]}, config=user_config
             )
 
         # Extract the response
@@ -91,6 +95,7 @@ def send_message_to_agent(user_input: str):
     except Exception as e:
         st.error(f"Error communicating with agent: {str(e)}")
         return f"Sorry, I encountered an error: {str(e)}"
+
 
 def stream_message_to_agent(user_input: str):
     """Send a message to the agent with streaming response."""
@@ -107,13 +112,11 @@ def stream_message_to_agent(user_input: str):
         full_response = ""
 
         for chunk in st.session_state.agent_graph.stream(
-            {"messages": [human_message]},
-            config=user_config,
-            stream_mode="values"
+            {"messages": [human_message]}, config=user_config, stream_mode="values"
         ):
             if "messages" in chunk and chunk["messages"]:
                 latest_message = chunk["messages"][-1]
-                if hasattr(latest_message, 'content') and latest_message.content:
+                if hasattr(latest_message, "content") and latest_message.content:
                     full_response = latest_message.content
                     response_placeholder.markdown(full_response)
 
@@ -123,12 +126,15 @@ def stream_message_to_agent(user_input: str):
         st.error(f"Error streaming from agent: {str(e)}")
         return f"Sorry, I encountered an error: {str(e)}"
 
+
 def main():
     """Main Streamlit application."""
 
     # Header
     st.title("🤖 Orga-AI Chat Interface")
-    st.markdown("Welcome to the Orga-AI chat interface! This tool allows you to interact with the LLM agent and visualize the graph flow.")
+    st.markdown(
+        "Welcome to the Orga-AI chat interface! This tool allows you to interact with the LLM agent and visualize the graph flow."
+    )
 
     # Quick start examples
     with st.expander("💡 Quick Start Examples"):
@@ -141,7 +147,7 @@ def main():
         """)
 
     st.markdown("---")
-    
+
     # Sidebar
     with st.sidebar:
         st.header("🔧 Controls")
@@ -149,15 +155,18 @@ def main():
         # Clear conversation button
         if st.button("🗑️ Clear Conversation", type="secondary"):
             st.session_state.messages = []
-            st.session_state.thread_id = f"streamlit_session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            st.session_state.thread_id = (
+                f"streamlit_session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            )
             st.rerun()
 
         # Thread ID display
         st.text_input("Thread ID", value=st.session_state.thread_id, disabled=True)
 
         # Streaming toggle
-        use_streaming = st.checkbox("🌊 Enable Streaming", value=False,
-                                   help="Stream responses in real-time")
+        use_streaming = st.checkbox(
+            "🌊 Enable Streaming", value=False, help="Stream responses in real-time"
+        )
 
         # Agent info
         st.subheader("📊 Agent Info")
@@ -165,27 +174,31 @@ def main():
 
         # Environment info
         st.subheader("🔧 Environment")
-        st.text(f"LMNR API Key: {'✅ Set' if os.getenv('LMNR_API_KEY') else '❌ Missing'}")
-        st.text(f"OpenAI API Key: {'✅ Set' if os.getenv('OPENAI_API_KEY') else '❌ Missing'}")
+        st.text(
+            f"LMNR API Key: {'✅ Set' if os.getenv('LMNR_API_KEY') else '❌ Missing'}"
+        )
+        st.text(
+            f"OpenAI API Key: {'✅ Set' if os.getenv('OPENAI_API_KEY') else '❌ Missing'}"
+        )
 
         # Graph visualization toggle
         show_graph = st.checkbox("Show Graph Visualization", value=True)
-    
+
     # Main content area
     if show_graph:
         col1, col2 = st.columns([2, 1])
     else:
         col1 = st.container()
         col2 = None
-    
+
     with col1:
         st.subheader("💬 Conversation")
-        
+
         # Display conversation history
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
-        
+
         # Chat input
         if prompt := st.chat_input("Type your message here..."):
             # Add user message to conversation
@@ -208,11 +221,12 @@ def main():
 
             # Rerun to update the interface
             st.rerun()
-    
+
     # Graph visualization column
     if show_graph and col2 is not None:
         with col2:
             display_graph_visualization()
+
 
 if __name__ == "__main__":
     main()

@@ -3,10 +3,10 @@ import jwt
 from dataclasses import dataclass
 import time
 
+
 @dataclass
 class TokenPayload:
     user_id: str
-    exp: int
 
 
 def decode_access_token(token: str):
@@ -15,5 +15,5 @@ def decode_access_token(token: str):
 
 
 def create_access_token(user_id: str):
-    payload = TokenPayload(user_id=user_id, exp=time.time() + 3600)
-    return jwt.encode(payload.model_dump(), os.getenv("JWT_SECRET"), algorithm="HS256")
+    payload = TokenPayload(user_id=user_id)
+    return jwt.encode(payload.__dict__, os.getenv("JWT_SECRET"), algorithm="HS256")

@@ -15,7 +15,7 @@ async def get_current_user(
     """
     try:
         payload = decode_access_token(credentials.credentials)
-        clerk_id = payload["sub"]
+        user_id = payload.user_id
     except Exception as e:
         print(e)
         raise HTTPException(
@@ -25,7 +25,7 @@ async def get_current_user(
         )
 
     try:
-        user = await User.get(clerk_id=clerk_id)
+        user = await User.get(id=user_id)
         return user
     except DoesNotExist:
         raise HTTPException(

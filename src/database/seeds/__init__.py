@@ -7,7 +7,7 @@ from .seed_runner import run_all_seeds, clear_all_data
 
 __all__ = [
     "seed_users",
-    "seed_categories", 
+    "seed_categories",
     "seed_tasks",
     "run_all_seeds",
     "clear_all_data",

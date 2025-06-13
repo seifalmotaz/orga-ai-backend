@@ -1,7 +1,7 @@
 """Task seed data for testing and development."""
 
 import asyncio
-from datetime import date, time, datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import List, Optional
 from src.database.models import Task, User, Category
 from src.database.models.enums import TaskStatus, Priority
@@ -13,7 +13,7 @@ TASK_SEED_DATA = [
         "title": "Complete quarterly report",
         "description": "Finish the Q4 financial report and submit to management",
         "due_date": date.today() + timedelta(days=7),
-        "due_time": time(17, 0),
+        "due_time": None,
         "status": TaskStatus.IN_PROGRESS,
         "priority": Priority.HIGH,
         "completion_percentage": 60,
@@ -24,7 +24,7 @@ TASK_SEED_DATA = [
         "title": "Plan weekend trip",
         "description": "Research destinations and book accommodation for weekend getaway",
         "due_date": date.today() + timedelta(days=3),
-        "due_time": time(20, 0),
+        "due_time": None,
         "status": TaskStatus.PENDING,
         "priority": Priority.MEDIUM,
         "completion_percentage": 0,
@@ -35,7 +35,7 @@ TASK_SEED_DATA = [
         "title": "Morning workout routine",
         "description": "30-minute cardio and strength training session",
         "due_date": date.today() + timedelta(days=1),
-        "due_time": "07:00:00",
+        "due_time": None,
         "status": TaskStatus.PENDING,
         "priority": Priority.MEDIUM,
         "completion_percentage": 0,
@@ -57,7 +57,7 @@ TASK_SEED_DATA = [
         "title": "Grocery shopping",
         "description": "Buy weekly groceries and household items",
         "due_date": date.today() + timedelta(days=2),
-        "due_time": "18:00:00",
+        "due_time": None,
         "status": TaskStatus.PENDING,
         "priority": Priority.MEDIUM,
         "completion_percentage": 0,
@@ -68,7 +68,7 @@ TASK_SEED_DATA = [
         "title": "Call dentist for appointment",
         "description": "Schedule routine dental checkup",
         "due_date": date.today() + timedelta(days=1),
-        "due_time": "09:00:00",
+        "due_time": None,
         "status": TaskStatus.PENDING,
         "priority": Priority.HIGH,
         "completion_percentage": 0,
@@ -101,7 +101,7 @@ TASK_SEED_DATA = [
         "title": "Review monthly budget",
         "description": "Analyze expenses and adjust budget for next month",
         "due_date": date.today() + timedelta(days=5),
-        "due_time": "19:00:00",
+        "due_time": None,
         "status": TaskStatus.PENDING,
         "priority": Priority.HIGH,
         "completion_percentage": 0,
@@ -127,7 +127,7 @@ COMPLETED_TASK_DATA = [
         "title": "Submit tax documents",
         "description": "File annual tax return with all required documents",
         "due_date": date.today() - timedelta(days=5),
-        "due_time": "23:59:00",
+        "due_time": None,
         "status": TaskStatus.COMPLETED,
         "priority": Priority.URGENT,
         "completion_percentage": 100,
@@ -152,7 +152,9 @@ COMPLETED_TASK_DATA = [
 ]
 
 
-async def seed_tasks(users: List[User] = None, categories: List[Category] = None) -> List[Task]:
+async def seed_tasks(
+    users: List[User] = None, categories: List[Category] = None
+) -> List[Task]:
     """Create seed tasks in the database.
 
     Args:
@@ -185,17 +187,18 @@ async def seed_tasks(users: List[User] = None, categories: List[Category] = None
         category_map = {cat.name: cat for cat in user_categories}
 
         # Create a subset of tasks for each user (not all tasks for all users)
-        user_task_data = TASK_SEED_DATA[i * 2:(i + 1) * 2 + 2]  # 2-4 tasks per user
+        user_task_data = TASK_SEED_DATA[i * 2 : (i + 1) * 2 + 2]  # 2-4 tasks per user
 
         for task_data in user_task_data:
             # Check if task already exists for this user
             existing_task = await Task.filter(
-                user=user,
-                title=task_data["title"]
+                user=user, title=task_data["title"]
             ).first()
 
             if existing_task:
-                print(f"    ⚠️  Task '{task_data['title']}' already exists for {user.email}, skipping...")
+                print(
+                    f"    ⚠️  Task '{task_data['title']}' already exists for {user.email}, skipping..."
+                )
                 created_tasks.append(existing_task)
                 continue
 
@@ -211,7 +214,9 @@ async def seed_tasks(users: List[User] = None, categories: List[Category] = None
             # Create task
             task = await Task.create(**task_data_with_user)
             created_tasks.append(task)
-            print(f"    ✅ Created task: {task.title} (Status: {task.status}, Priority: {task.priority})")
+            print(
+                f"    ✅ Created task: {task.title} (Status: {task.status}, Priority: {task.priority})"
+            )
 
     # Create some completed tasks for the first user
     if users:
@@ -224,8 +229,7 @@ async def seed_tasks(users: List[User] = None, categories: List[Category] = None
         for task_data in COMPLETED_TASK_DATA:
             # Check if task already exists
             existing_task = await Task.filter(
-                user=first_user,
-                title=task_data["title"]
+                user=first_user, title=task_data["title"]
             ).first()
 
             if existing_task:
@@ -292,11 +296,13 @@ async def seed_subtasks(tasks: List[Task] = None) -> List[Task]:
             existing_subtask = await Task.filter(
                 user=parent_task.user,
                 title=subtask_data["title"],
-                parent_task=parent_task
+                parent_task=parent_task,
             ).first()
 
             if existing_subtask:
-                print(f"    ⚠️  Subtask '{subtask_data['title']}' already exists, skipping...")
+                print(
+                    f"    ⚠️  Subtask '{subtask_data['title']}' already exists, skipping..."
+                )
                 created_subtasks.append(existing_subtask)
                 continue
 
@@ -329,6 +335,7 @@ if __name__ == "__main__":
     # For testing the seed function directly
     async def main():
         from src.database import init
+
         await init()
 
         # Get users and categories first
@@ -378,6 +385,6 @@ SUBTASK_DATA = [
                 "priority": Priority.HIGH,
                 "completion_percentage": 0,
             },
-        ]
+        ],
     }
 ]

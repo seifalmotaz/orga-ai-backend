@@ -11,7 +11,7 @@ class TaskBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=500, description="Task title")
     description: Optional[str] = Field(None, description="Task description")
     due_date: Optional[date] = Field(None, description="Due date for the task")
-    due_time: Optional[time] = Field(None, description="Due time for the task")
+    # due_time: Optional[time] = Field(None, description="Due time for the task")
     status: TaskStatus = Field(TaskStatus.PENDING, description="Task status")
     priority: Priority = Field(Priority.LOW, description="Task priority")
     completion_percentage: int = Field(

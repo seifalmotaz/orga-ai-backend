@@ -8,10 +8,12 @@ import os
 user_route = APIRouter(prefix="/users", tags=["users"])
 
 if os.getenv("DEBUG") == "True":
+
     @user_route.post("/")
     async def login_user_test(user_id: str):
         token = create_access_token(user_id=user_id)
         return {"token": token}
+
 
 @user_route.get("/")
 async def get_users():

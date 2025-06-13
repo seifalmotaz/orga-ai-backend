@@ -1,5 +1,6 @@
 """Run the model interactively."""
 
+import asyncio
 import os
 import sys
 
@@ -11,19 +12,18 @@ import dotenv
 # Load environment variables
 dotenv.load_dotenv()
 
-
+import asyncio
 from lmnr import Laminar
 from langchain_core.messages import HumanMessage
 from src.lib.main import create_agent_graph
 from langchain_core.runnables.config import RunnableConfig
 
 
-
 # Initialize Laminar
 Laminar.initialize(project_api_key=os.getenv("LMNR_API_KEY"))
 
 
-if __name__ == "__main__":
+async def main():
     app = create_agent_graph()
     user_config: RunnableConfig = {
         "configurable": {"thread_id": "123"},
@@ -32,9 +32,17 @@ if __name__ == "__main__":
         query = input("User: ")
         if query.lower() == "exit":
             break
-        result = app.invoke({"messages": [HumanMessage(content=query)]}, config=user_config, stream_mode="values")
+        result = await app.ainvoke(
+            {"messages": [HumanMessage(content=query)]},
+            config=user_config,
+            stream_mode="values",
+        )
         messages = result["messages"]
         # last message is the response
         response = messages[-1]
         print(response.content)
         print("-" * 100)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

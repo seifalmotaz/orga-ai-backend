@@ -18,7 +18,7 @@ USER_SEED_DATA = [
     },
     {
         "clerk_id": "user_3def456ghi789abc123",
-        "email": "jane.smith@example.com", 
+        "email": "jane.smith@example.com",
         "username": "janesmith",
         "timezone": "Europe/London",
         "default_reminder_minutes": 30,
@@ -81,14 +81,14 @@ USER_DEVICE_SEED_DATA = [
 
 async def seed_users() -> List[User]:
     """Create seed users in the database.
-    
+
     Returns:
         List of created User instances.
     """
     print("🌱 Seeding users...")
-    
+
     created_users = []
-    
+
     for user_data in USER_SEED_DATA:
         # Check if user already exists
         existing_user = await User.filter(email=user_data["email"]).first()
@@ -96,20 +96,20 @@ async def seed_users() -> List[User]:
             print(f"  ⚠️  User {user_data['email']} already exists, skipping...")
             created_users.append(existing_user)
             continue
-            
+
         # Create new user
         user = await User.create(**user_data)
         created_users.append(user)
         print(f"  ✅ Created user: {user.email} ({user.username})")
-        
+
         # Create a device for the first few users
         if len(created_users) <= len(USER_DEVICE_SEED_DATA):
             device_data = USER_DEVICE_SEED_DATA[len(created_users) - 1].copy()
             device_data["user"] = user
-            
+
             device = await UserDevice.create(**device_data)
             print(f"    📱 Created device: {device.device_type} for {user.email}")
-    
+
     print(f"✅ Seeded {len(created_users)} users")
     return created_users
 
@@ -117,15 +117,15 @@ async def seed_users() -> List[User]:
 async def clear_user_data():
     """Clear all user and user device data from the database."""
     print("🧹 Clearing user data...")
-    
+
     # Delete user devices first (foreign key constraint)
     deleted_devices = await UserDevice.all().delete()
     print(f"  🗑️  Deleted {deleted_devices} user devices")
-    
+
     # Delete users
     deleted_users = await User.all().delete()
     print(f"  🗑️  Deleted {deleted_users} users")
-    
+
     print("✅ User data cleared")
 
 
@@ -133,7 +133,8 @@ if __name__ == "__main__":
     # For testing the seed function directly
     async def main():
         from src.database import init
+
         await init()
         await seed_users()
-    
+
     asyncio.run(main())
