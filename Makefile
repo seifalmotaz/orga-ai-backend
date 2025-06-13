@@ -13,7 +13,8 @@ runserver:
 # Run all tests
 test:
 	@echo "Running all tests..."
-	pytest tests/*/** -v
+	make clean
+	pytest tests/*/**
 
 # Run integration tests only
 test-integration:

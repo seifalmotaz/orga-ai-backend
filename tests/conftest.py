@@ -4,6 +4,7 @@ import threading
 import time
 import socket
 from src.server.app import app
+from tortoise import Tortoise
 
 
 def is_port_open(host, port):
@@ -52,3 +53,9 @@ async def client(test_server):
     base_url = test_server
     async with httpx.AsyncClient(base_url=base_url, timeout=30.0) as client:
         yield client
+
+
+@pytest.fixture(autouse=True)
+async def cleanup():
+    yield
+    await Tortoise.close_connections()
