@@ -1,7 +1,6 @@
 from src.database.models import User
-from robyn import SubRouter, Response
-import json
-
+from robyn import SubRouter, Response, Request
+from tortoise.exceptions import DoesNotExist
 
 user_route = SubRouter(__file__, prefix="/users")
 
@@ -31,22 +30,15 @@ async def get_users():
                     else None,
                 }
             )
-        return Response(
-            status_code=200,
-            headers={"Content-Type": "application/json"},
-            description=json.dumps(users_data),
-        )
+        return users_data
     except Exception as e:
-        return Response(
-            status_code=500,
-            headers={"Content-Type": "application/json"},
-            description=json.dumps({"error": str(e)}),
-        )
+        return {"error": str(e)}
 
 
-@user_route.get("/{user_id}")
-async def get_user_by_id(user_id: int):
+@user_route.get("/:user_id")
+async def get_user_by_id(request: Request):
     """Get a user by ID."""
+    user_id = request.path_params.get("user_id")
     try:
         user = await User.get(id=user_id)
         user_data = {
@@ -60,20 +52,11 @@ async def get_user_by_id(user_id: int):
             "created_at": user.created_at.isoformat() if user.created_at else None,
             "updated_at": user.updated_at.isoformat() if user.updated_at else None,
         }
-        return Response(
-            status_code=200,
-            headers={"Content-Type": "application/json"},
-            description=json.dumps(user_data),
-        )
-    except User.DoesNotExist:
-        return Response(
-            status_code=404,
-            headers={"Content-Type": "application/json"},
-            description=json.dumps({"error": "User not found"}),
-        )
+        return {
+            "status": "success",
+            "data": user_data,
+        }
+    except DoesNotExist:
+        return {"error": "User not found"}
     except Exception as e:
-        return Response(
-            status_code=500,
-            headers={"Content-Type": "application/json"},
-            description=json.dumps({"error": str(e)}),
-        )
+        return {"error": str(e)}

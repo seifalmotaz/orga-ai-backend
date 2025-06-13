@@ -11,8 +11,7 @@ async def test_get_users(client):
     # Parse JSON response
     users = json.loads(response.text)
     assert isinstance(users, list)
-    # Initially should be empty
-    assert users == []
+    assert len(users) == 0
 
 
 @pytest.mark.asyncio
