@@ -12,8 +12,6 @@ dependencies = [
     "python-dotenv",
     "asyncpg",
     "orjson>=3.9.15",
-    "pytest>=8.4.0",
-    "pytest-asyncio>=1.0.0",
 ]
 
 [tool.aerich]
@@ -22,7 +20,7 @@ location = "./src/database/migrations"
 src_folder = "./."
 
 [dependency-groups]
-dev = ["pytest-asyncio>=1.0.0"]
+dev = ["pytest>=8.4.0", "pytest-asyncio>=1.0.0", "httpx>=0.27.2"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

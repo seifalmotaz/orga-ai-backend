@@ -2,11 +2,11 @@
 install:
 	uv sync
 
-robyn:
-	uv run robyn src/server/app.py --dev --host 0.0.0.0 --port 8080 --reload 
+dev:
+	uv run robyn src/cli/runserver.py --dev
 
 # Run the development server
-server:
+runserver:
 	@echo "Starting Robyn server..."
 	uv run src/cli/runserver.py
 
