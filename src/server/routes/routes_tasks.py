@@ -1,9 +1,9 @@
-from robyn import SubRouter, Response
+from fastapi import APIRouter
 
 
-tasks_route = SubRouter(__file__, prefix="/tasks")
+tasks_route = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
 @tasks_route.get("/")
 async def get_tasks():
-    return Response(status_code=200, json={"message": "Hello, World!"})
+    return {"message": "Hello, World!"}

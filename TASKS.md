@@ -36,14 +36,14 @@ Folder: `src/server/`
 > Goal: expose REST/GraphQL endpoints that manipulate the domain objects.
 
 ### 2.1 Infrastructure
-- [ ] Add **Robyn** application factory in `src/server/app.py`.
-- [ ] Integrate Tortoise with Robyn (init on startup, shutdown hook).
+- [x] Add **FastAPI** application factory in `src/server/app.py`.
+- [x] Integrate Tortoise with FastAPI (init on startup, shutdown hook).
 - [ ] Add `settings.py` (pydantic-based) for configuration.
 - [ ] Enable CORS, Logging, Error handling middleware.
 
 ### 2.2 Authentication & Accounts (using Clerk)
 - [ ] Integrate Clerk SDK for authentication.
-- [ ] Create middleware to validate Clerk JWT tokens.
+- [x] Create middleware to validate Clerk JWT tokens (migrated to FastAPI dependencies).
 - [ ] Sync Clerk user data with local `User` model (clerk_id, email, etc.).
 - [ ] Device registration endpoint to persist `UserDevice` & push tokens.
 
@@ -87,7 +87,7 @@ Folder: `src/cli/`
 
 - [ ] Scaffold CLI with **Typer**.
 - [ ] Commands:
-  - `serve` – start Robyn server.
+  - `serve` – start FastAPI server.
   - `worker` – start background worker.
   - `migrate` – run Aerich migrations.
   - `createsuperuser` – prompt for admin user.
@@ -97,9 +97,9 @@ Folder: `src/cli/`
 
 > Goal: guarantee reliability through automated checks.
 
-- [ ] Configure **pytest** & `pytest-asyncio`.
+- [x] Configure **pytest** & `pytest-asyncio`.
 - [ ] Factory-boy fixtures for models.
-- [ ] Integration tests for each API module (Robyn test client).
+- [x] Integration tests for each API module (FastAPI test client).
 - [ ] Property-based tests for recurrence & streak algorithms.
 - [ ] 90% coverage gate in CI.
 

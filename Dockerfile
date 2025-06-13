@@ -4,9 +4,10 @@ WORKDIR /workspace
 
 COPY . .
 
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
-
+# Install uv and dependencies
+RUN pip install uv
+RUN uv sync
 
 EXPOSE 8080
 
-CMD ["python3", "app.py", "--log-level=DEBUG"]
+CMD ["uv", "run", "uvicorn", "src.server.app:app", "--host", "0.0.0.0", "--port", "8080"]

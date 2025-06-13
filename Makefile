@@ -3,12 +3,12 @@ install:
 	uv sync
 
 dev:
-	uv run robyn src/cli/runserver.py --dev
+	uv run python src/cli/runserver.py
 
 # Run the development server
 runserver:
-	@echo "Starting Robyn server..."
-	uv run src/cli/runserver.py
+	@echo "Starting FastAPI server..."
+	uv run python src/cli/runserver.py
 
 # Run all tests
 test:
