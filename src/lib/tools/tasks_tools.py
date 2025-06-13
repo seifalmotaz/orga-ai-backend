@@ -3,9 +3,8 @@ import os
 import httpx
 from langchain_core.tools import tool
 from src.database.models.enums import Priority, TaskStatus
-from src.server.schemas.task_schemas import TaskCreate
 
-from typing import Annotated
+from typing import Annotated, Optional
 
 
 def create_client():
@@ -30,6 +29,42 @@ async def get_today_tasks():
     )
     return response.json()
 
+@tool
+async def get_tasks_filtered(
+    due_date_from: Annotated[Optional[date], "The due date from"],
+    due_date_to: Annotated[Optional[date], "The due date to"],
+    status: Annotated[Optional[TaskStatus], "The status of the task"],
+    priority: Annotated[Optional[Priority], "The priority of the task"],
+    completion_percentage: Annotated[Optional[int], "The completion percentage of the task"],
+    estimated_duration: Annotated[Optional[int], "The estimated duration of the task"],
+):
+    """Get tasks filtered by the given parameters."""
+    client = create_client()
+    params = {}
+    if due_date_from:
+        params["due_date_from"] = due_date_from.isoformat()
+    if due_date_to:
+        params["due_date_to"] = due_date_to.isoformat()
+    if status:
+        params["status"] = status.value
+    if priority:
+        params["priority"] = priority.value
+    if completion_percentage:
+        params["completion_percentage"] = completion_percentage
+    if estimated_duration:
+        params["estimated_duration"] = estimated_duration
+    response = await client.get(
+        "/tasks/",
+        params=params,
+    )
+    return response.json()
+
+@tool
+async def get_task_by_id(task_id: str):
+    """Get a task by its ID."""
+    client = create_client()
+    response = await client.get(f"/tasks/{task_id}")
+    return response.json()
 
 @tool
 async def create_task(
