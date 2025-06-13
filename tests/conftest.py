@@ -23,7 +23,7 @@ def test_server():
 
     def run_server():
         # Run the Robyn app - it will use its default configuration
-        app.start()
+        app.start(host=host, port=port)
 
     # Start server in a separate thread
     server_thread = threading.Thread(target=run_server, daemon=True)
