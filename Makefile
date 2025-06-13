@@ -5,6 +5,9 @@ install:
 dev:
 	uv run python src/cli/runserver.py
 
+runmodel:
+	uv run python src/cli/runmodel.py
+
 # Run the development server
 runserver:
 	@echo "Starting FastAPI server..."

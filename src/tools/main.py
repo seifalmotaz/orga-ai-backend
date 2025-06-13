@@ -1,12 +1,10 @@
 from typing import Literal
-from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.checkpoint.memory import MemorySaver
-from tools import tools, tool_node
-from state import AgentState
-from models import gpt_4o_mini
-from utils import visualize_graph
+from .tools_func import tools, tool_node
+from .state import AgentState
+from .models import gpt4dot1
 
 
 
@@ -21,7 +19,7 @@ def should_continue(state: AgentState) -> Literal["tools", "end"]:
 def call_model(state: AgentState):
     """Call the model to generate a response."""
     messages = state["messages"]
-    model = gpt_4o_mini.bind_tools(tools)
+    model = gpt4dot1.bind_tools(tools)
     response = model.invoke(messages)
     return {"messages": [response]}
 
