@@ -29,3 +29,13 @@ app.include_router(tasks_route)
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        logging.info(f"Sending response: {response.status_code}")
+        return response
+
+
+app.add_middleware(LoggingMiddleware)
