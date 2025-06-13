@@ -8,6 +8,14 @@ dev:
 runmodel:
 	uv run python src/cli/runmodel.py
 
+runui:
+	uv run streamlit run src/cli/streamlit_ui.py
+
+# Run the Streamlit UI
+streamlit:
+	@echo "Starting Streamlit UI..."
+	uv run streamlit run src/cli/streamlit_ui.py
+
 # Run the development server
 runserver:
 	@echo "Starting FastAPI server..."
