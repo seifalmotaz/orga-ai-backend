@@ -29,13 +29,16 @@ async def get_today_tasks():
     )
     return response.json()
 
+
 @tool
 async def get_tasks_filtered(
     due_date_from: Annotated[Optional[date], "The due date from"],
     due_date_to: Annotated[Optional[date], "The due date to"],
     status: Annotated[Optional[TaskStatus], "The status of the task"],
     priority: Annotated[Optional[Priority], "The priority of the task"],
-    completion_percentage: Annotated[Optional[int], "The completion percentage of the task"],
+    completion_percentage: Annotated[
+        Optional[int], "The completion percentage of the task"
+    ],
     estimated_duration: Annotated[Optional[int], "The estimated duration of the task"],
 ):
     """Get tasks filtered by the given parameters."""
@@ -59,12 +62,14 @@ async def get_tasks_filtered(
     )
     return response.json()
 
+
 @tool
 async def get_task_by_id(task_id: str):
     """Get a task by its ID."""
     client = create_client()
     response = await client.get(f"/tasks/{task_id}")
     return response.json()
+
 
 @tool
 async def create_task(

@@ -12,11 +12,11 @@ import dotenv
 # Load environment variables
 dotenv.load_dotenv()
 
-import asyncio
-from lmnr import Laminar
-from langchain_core.messages import HumanMessage
-from src.lib.main import create_agent_graph
-from langchain_core.runnables.config import RunnableConfig
+import asyncio  # noqa: E402, F811
+from lmnr import Laminar  # noqa: E402
+from langchain_core.messages import HumanMessage  # noqa: E402
+from src.lib.main import create_agent_graph  # noqa: E402
+from langchain_core.runnables.config import RunnableConfig  # noqa: E402
 
 
 # Initialize Laminar
