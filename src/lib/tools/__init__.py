@@ -32,6 +32,7 @@ def get_today_date_and_time() -> dict:
 @tool
 def get_day_after(
     after_months: Annotated[int, "The number of months to add to the current date"],
+    after_weeks: Annotated[int, "The number of weeks to add to the current date"],
     after_days: Annotated[int, "The number of days to add to the current date"],
     after_hours: Annotated[int, "The number of hours to add to the current date"],
     after_minutes: Annotated[int, "The number of minutes to add to the current date"],
@@ -45,8 +46,10 @@ def get_day_after(
     - month: The current month.
     - year: The current year.
     """
+    if after_months:
+        after_weeks = (after_months * 4) + after_weeks
     date_to_return = date.today() + timedelta(
-        months=after_months,
+        weeks=after_weeks,
         days=after_days,
         hours=after_hours,
         minutes=after_minutes,
