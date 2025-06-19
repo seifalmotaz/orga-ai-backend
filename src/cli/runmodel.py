@@ -4,6 +4,8 @@ import asyncio
 from datetime import datetime
 import os
 import sys
+import contextlib
+import itertools
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -18,6 +20,30 @@ from lmnr import Laminar  # noqa: E402
 from langchain_core.messages import HumanMessage, SystemMessage  # noqa: E402
 from src.lib.main import create_agent_graph  # noqa: E402
 from langchain_core.runnables.config import RunnableConfig  # noqa: E402
+
+
+# ANSI color codes for terminal output
+class Colors:
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    MAGENTA = "\033[95m"
+    RESET = "\033[0m"
+
+
+# Simple asynchronous spinner shown while the model is processing
+async def spinner(label: str = "Thinking..."):
+    """Display an animated spinner with a label until cancelled."""
+    frames = itertools.cycle(["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
+    try:
+        while True:
+            frame = next(frames)
+            print(f"\r{Colors.CYAN}{label} {frame}{Colors.RESET}", end="", flush=True)
+            await asyncio.sleep(0.1)
+    except asyncio.CancelledError:
+        # Clear the spinner line when cancelled
+        print("\r" + " " * (len(label) + 4) + "\r", end="", flush=True)
+        raise
 
 
 # Initialize Laminar
@@ -37,7 +63,7 @@ async def main():
     first_interaction = True  # Flag to ensure the system prompt is sent only once
 
     while True:
-        query = input("User: ")
+        query = input(f"{Colors.GREEN}You:{Colors.RESET} ")
         if query.lower() == "exit":
             break
 
@@ -54,16 +80,25 @@ async def main():
 
         messages_to_send.append(HumanMessage(content=query))
 
-        result = await app.ainvoke(
-            {"messages": messages_to_send},
-            config=user_config,
-            stream_mode="values",
-        )
+        # Show a spinner while waiting for the model's response
+        spinner_task = asyncio.create_task(spinner("Assistant is thinking"))
+        try:
+            result = await app.ainvoke(
+                {"messages": messages_to_send},
+                config=user_config,
+                stream_mode="values",
+            )
+        finally:
+            spinner_task.cancel()
+            # Silence the CancelledError propagated from the spinner coroutine
+            with contextlib.suppress(asyncio.CancelledError):
+                await spinner_task
+
         messages = result["messages"]
         # last message is the response
         response = messages[-1]
-        print(response.content)
-        print("-" * 100)
+        print(f"{Colors.YELLOW}Assistant:{Colors.RESET} {response.content}")
+        print(f"{Colors.MAGENTA}{'-' * 100}{Colors.RESET}")
 
 
 if __name__ == "__main__":
