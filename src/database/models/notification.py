@@ -7,10 +7,8 @@ class NotificationQueue(BaseModel):
     user = fields.ForeignKeyField(
         "models.User", related_name="notifications", db_index=True
     )
-    event = fields.ForeignKeyField("models.Event", null=True, db_index=True)
     task = fields.ForeignKeyField("models.Task", null=True, db_index=True)
     habit = fields.ForeignKeyField("models.Habit", null=True, db_index=True)
-    event_reminder = fields.ForeignKeyField("models.EventReminder", null=True)
     task_reminder = fields.ForeignKeyField("models.TaskReminder", null=True)
     scheduled_time = fields.DatetimeField(db_index=True)
     notification_type = fields.CharEnumField(NotificationType)
@@ -29,7 +27,6 @@ class NotificationQueue(BaseModel):
             ("scheduled_time", "status"),
             ("user_id", "status"),
             ("status", "retry_count"),
-            ("event_id",),
             ("task_id",),
             ("habit_id",),
         ]

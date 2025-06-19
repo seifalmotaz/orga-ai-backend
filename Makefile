@@ -42,8 +42,8 @@ clean:
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name ".mypy_cache" -exec rm -rf {} +
 
-makemigrations:
-	uv run aerich migrate --name $(name)
+migrations:
+	uv run aerich migrate
 
 migrate:
 	uv run aerich upgrade

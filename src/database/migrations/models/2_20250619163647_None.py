@@ -70,18 +70,6 @@ CREATE TABLE IF NOT EXISTS "users" (
 CREATE INDEX IF NOT EXISTS "idx_users_clerk_i_f06c0c" ON "users" ("clerk_id");
 CREATE INDEX IF NOT EXISTS "idx_users_email_133a6f" ON "users" ("email");
 CREATE INDEX IF NOT EXISTS "idx_users_email_3ff49e" ON "users" ("email", "clerk_id");
-CREATE TABLE IF NOT EXISTS "calendars" (
-    "id" CHAR(36) NOT NULL PRIMARY KEY,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "deleted_at" TIMESTAMP,
-    "name" VARCHAR(255) NOT NULL,
-    "description" TEXT,
-    "color" VARCHAR(7) NOT NULL DEFAULT '#3174ad',
-    "is_default" INT NOT NULL DEFAULT 0,
-    "user_id" CHAR(36) NOT NULL REFERENCES "users" ("id") ON DELETE CASCADE
-);
-CREATE INDEX IF NOT EXISTS "idx_calendars_user_id_5fb33b" ON "calendars" ("user_id");
 CREATE TABLE IF NOT EXISTS "categories" (
     "id" CHAR(36) NOT NULL PRIMARY KEY,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -92,81 +80,6 @@ CREATE TABLE IF NOT EXISTS "categories" (
     "user_id" CHAR(36) NOT NULL REFERENCES "users" ("id") ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS "idx_categories_user_id_b282c5" ON "categories" ("user_id");
-CREATE TABLE IF NOT EXISTS "events" (
-    "id" CHAR(36) NOT NULL PRIMARY KEY,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "deleted_at" TIMESTAMP,
-    "title" VARCHAR(500) NOT NULL,
-    "description" TEXT,
-    "location" VARCHAR(500),
-    "start_datetime" TIMESTAMP NOT NULL,
-    "end_datetime" TIMESTAMP NOT NULL,
-    "is_all_day" INT NOT NULL DEFAULT 0,
-    "is_recurring_master" INT NOT NULL DEFAULT 0,
-    "status" VARCHAR(9) NOT NULL DEFAULT 'confirmed' /* CONFIRMED: confirmed\nTENTATIVE: tentative\nCANCELLED: cancelled */,
-    "priority" SMALLINT NOT NULL DEFAULT 0 /* NONE: 0\nLOW: 1\nMEDIUM: 2\nHIGH: 3\nURGENT: 4 */,
-    "calendar_id" CHAR(36) NOT NULL REFERENCES "calendars" ("id") ON DELETE CASCADE,
-    "parent_event_id" CHAR(36) REFERENCES "events" ("id") ON DELETE CASCADE,
-    "recurrence_pattern_id" CHAR(36) REFERENCES "recurrence_patterns" ("id") ON DELETE CASCADE
-);
-CREATE INDEX IF NOT EXISTS "idx_events_title_44f4d6" ON "events" ("title");
-CREATE INDEX IF NOT EXISTS "idx_events_start_d_6bb698" ON "events" ("start_datetime");
-CREATE INDEX IF NOT EXISTS "idx_events_end_dat_019d54" ON "events" ("end_datetime");
-CREATE INDEX IF NOT EXISTS "idx_events_is_recu_ba15e6" ON "events" ("is_recurring_master");
-CREATE INDEX IF NOT EXISTS "idx_events_status_c1e5d2" ON "events" ("status");
-CREATE INDEX IF NOT EXISTS "idx_events_calenda_262f7f" ON "events" ("calendar_id");
-CREATE INDEX IF NOT EXISTS "idx_events_start_d_56bb23" ON "events" ("start_datetime", "end_datetime");
-CREATE INDEX IF NOT EXISTS "idx_events_status_077525" ON "events" ("status", "start_datetime");
-CREATE TABLE IF NOT EXISTS "event_category_mappings" (
-    "id" CHAR(36) NOT NULL PRIMARY KEY,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "deleted_at" TIMESTAMP,
-    "category_id" CHAR(36) NOT NULL REFERENCES "categories" ("id") ON DELETE CASCADE,
-    "event_id" CHAR(36) NOT NULL REFERENCES "events" ("id") ON DELETE CASCADE
-);
-CREATE INDEX IF NOT EXISTS "idx_event_categ_event_i_f2de3c" ON "event_category_mappings" ("event_id");
-CREATE INDEX IF NOT EXISTS "idx_event_categ_categor_aa7aab" ON "event_category_mappings" ("category_id");
-CREATE TABLE IF NOT EXISTS "event_exceptions" (
-    "id" CHAR(36) NOT NULL PRIMARY KEY,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "deleted_at" TIMESTAMP,
-    "exception_date" DATE NOT NULL,
-    "exception_type" VARCHAR(20) NOT NULL,
-    "master_event_id" CHAR(36) NOT NULL REFERENCES "events" ("id") ON DELETE CASCADE,
-    "modified_event_id" CHAR(36) REFERENCES "events" ("id") ON DELETE CASCADE
-);
-CREATE INDEX IF NOT EXISTS "idx_event_excep_master__501464" ON "event_exceptions" ("master_event_id", "exception_date");
-CREATE TABLE IF NOT EXISTS "event_instances" (
-    "id" CHAR(36) NOT NULL PRIMARY KEY,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "deleted_at" TIMESTAMP,
-    "instance_date" DATE NOT NULL,
-    "start_datetime" TIMESTAMP NOT NULL,
-    "end_datetime" TIMESTAMP NOT NULL,
-    "is_exception" INT NOT NULL DEFAULT 0,
-    "master_event_id" CHAR(36) NOT NULL REFERENCES "events" ("id") ON DELETE CASCADE
-);
-CREATE INDEX IF NOT EXISTS "idx_event_insta_instanc_4858d5" ON "event_instances" ("instance_date");
-CREATE INDEX IF NOT EXISTS "idx_event_insta_start_d_e3e2c4" ON "event_instances" ("start_datetime");
-CREATE INDEX IF NOT EXISTS "idx_event_insta_end_dat_3c051f" ON "event_instances" ("end_datetime");
-CREATE INDEX IF NOT EXISTS "idx_event_insta_master__da14c3" ON "event_instances" ("master_event_id");
-CREATE INDEX IF NOT EXISTS "idx_event_insta_master__1b845e" ON "event_instances" ("master_event_id", "instance_date");
-CREATE INDEX IF NOT EXISTS "idx_event_insta_start_d_243b18" ON "event_instances" ("start_datetime", "end_datetime");
-CREATE TABLE IF NOT EXISTS "event_reminders" (
-    "id" CHAR(36) NOT NULL PRIMARY KEY,
-    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "deleted_at" TIMESTAMP,
-    "reminder_minutes" INT NOT NULL,
-    "notification_type" VARCHAR(8) NOT NULL /* EMAIL: email\nPUSH: push\nWEB_PUSH: web_push */,
-    "is_enabled" INT NOT NULL DEFAULT 1,
-    "event_id" CHAR(36) NOT NULL REFERENCES "events" ("id") ON DELETE CASCADE
-);
-CREATE INDEX IF NOT EXISTS "idx_event_remin_event_i_227c51" ON "event_reminders" ("event_id");
 CREATE TABLE IF NOT EXISTS "habits" (
     "id" CHAR(36) NOT NULL PRIMARY KEY,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -277,8 +190,6 @@ CREATE TABLE IF NOT EXISTS "notification_queue" (
     "retry_count" INT NOT NULL DEFAULT 0,
     "error_message" TEXT,
     "sent_at" TIMESTAMP,
-    "event_id" CHAR(36) REFERENCES "events" ("id") ON DELETE CASCADE,
-    "event_reminder_id" CHAR(36) REFERENCES "event_reminders" ("id") ON DELETE CASCADE,
     "habit_id" CHAR(36) REFERENCES "habits" ("id") ON DELETE CASCADE,
     "task_id" CHAR(36) REFERENCES "tasks" ("id") ON DELETE CASCADE,
     "task_reminder_id" CHAR(36) REFERENCES "task_reminders" ("id") ON DELETE CASCADE,
@@ -286,7 +197,6 @@ CREATE TABLE IF NOT EXISTS "notification_queue" (
 );
 CREATE INDEX IF NOT EXISTS "idx_notificatio_schedul_11a671" ON "notification_queue" ("scheduled_time");
 CREATE INDEX IF NOT EXISTS "idx_notificatio_status_2935b5" ON "notification_queue" ("status");
-CREATE INDEX IF NOT EXISTS "idx_notificatio_event_i_0f5d68" ON "notification_queue" ("event_id");
 CREATE INDEX IF NOT EXISTS "idx_notificatio_habit_i_9cd507" ON "notification_queue" ("habit_id");
 CREATE INDEX IF NOT EXISTS "idx_notificatio_task_id_ae321e" ON "notification_queue" ("task_id");
 CREATE INDEX IF NOT EXISTS "idx_notificatio_user_id_407571" ON "notification_queue" ("user_id");
